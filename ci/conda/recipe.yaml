@@ -1,0 +1,91 @@
+# Development copy of the conda-forge imas-fortran-feedstock recipe, used to
+# debug Windows (win-64) conda builds against the local source tree.
+# Differences with the feedstock recipe:
+#  * the IMAS-Fortran source is this repository (path source) instead of a
+#    release tarball;
+#  * Windows is not skipped and bld.bat is used on Windows.
+
+context:
+  version: "0.0.0.dev"
+  # Data Dictionary version used to generate the IDS types and routines
+  dd_version: "4.1.1"
+
+package:
+  name: imas-fortran
+  version: ${{ version }}
+
+source:
+  # Fortran High Level Interface of the IMAS Access Layer: this repository
+  - path: ../..
+  # IMAS Data Dictionary sources: IDSDef.xml is generated from these at build
+  # time (see build.sh / bld.bat) and defines the IDS types of the interface
+  - url: https://github.com/iterorganization/IMAS-Data-Dictionary/archive/refs/tags/${{ dd_version }}.tar.gz
+    sha256: a8aa78bacbd83801be13dfcca4e2347aa2173d6fd8de3537d724db7254d4c5f0
+    target_directory: data-dictionary
+
+build:
+  number: 0
+  string: dd${{ dd_version | version_to_buildstring }}h${{ hash }}_${{ build_number }}
+  # python is only a build-time tool: keep it out of the build variants
+  variant:
+    ignore_keys:
+      - python
+  script:
+    file: ${{ "bld.bat" if win else "build.sh" }}
+    env:
+      DD_VERSION: ${{ dd_version }}
+
+requirements:
+  build:
+    - ${{ compiler('c') }}
+    - ${{ compiler('cxx') }}
+    - ${{ compiler('fortran') }}
+    - ${{ stdlib('c') }}
+    - cmake
+    - ninja
+    - pkg-config
+    # Saxon-HE (Java) performs the XSLT 2.0 transformations that generate the
+    # IDS types and routines from the Data Dictionary (replaces the PyPI-only
+    # saxonche)
+    - openjdk
+    - saxon-he
+    # Used to pre-create the venv expected by the build system
+    - python
+  host:
+    - libimas-core
+  run_exports:
+    # The generated API depends on both the AL and the DD version, and the
+    # installed .mod files are specific to the Fortran compiler used
+    - ${{ pin_subpackage('imas-fortran', upper_bound='x.x.x') }}
+
+tests:
+  - package_contents:
+      lib:
+        - al-fortran-${{ dd_version }}
+        - al-identifiers-fortran
+      include:
+        - fortran/ids_schemas.mod
+      files:
+        - ${{ "Library/" if win }}lib/pkgconfig/al-fortran.pc
+        - ${{ "Library/" if win }}lib/pkgconfig/al-fortran-${{ dd_version }}.pc
+        - ${{ "Library/" if win }}lib/pkgconfig/al-identifiers-fortran.pc
+        # backwards-compatibility symlinks (not created on Windows)
+        - if: unix
+          then: lib/pkgconfig/imas-fortran.pc
+  - script:
+      - pkg-config --exists --print-errors al-fortran
+      - pkg-config --exists --print-errors "al-fortran-${{ dd_version }}"
+      - pkg-config --exists --print-errors al-identifiers-fortran
+    requirements:
+      run:
+        - pkg-config
+
+about:
+  homepage: https://imas.iter.org/
+  license: LGPL-3.0-only
+  license_file:
+    - LICENSE.txt
+    - data-dictionary/LICENSE-LGPL
+    - data-dictionary/LICENSE-CC-BY-ND
+  summary: Fortran High Level Interface of the IMAS Access Layer
+  repository: https://github.com/iterorganization/IMAS-Fortran

@@ -1,0 +1,5 @@
+# Recipe-local variant overrides, applied on top of the conda-forge pinning.
+# conda-forge still defaults to "classic" flang 5 on win-64: opt in to the
+# LLVM flang instead (same version as conda-forge uses for win-arm64)
+fortran_compiler_version:      # [win]
+  - 22                         # [win]

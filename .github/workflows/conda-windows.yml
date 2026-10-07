@@ -1,0 +1,73 @@
+name: Conda build (Windows)
+
+# Development workflow: build the conda package from ci/conda with rattler-build
+# on Windows, against the conda-forge pinning, to debug win-64 support before
+# moving the recipe changes to conda-forge/imas-fortran-feedstock.
+
+on:
+  push:
+    branches: [ feature/windows-conda ]
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: "Open an SSH session (tmate) on the runner when the build fails"
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    name: rattler-build win-64
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: Install rattler-build and the conda-forge pinning
+      run: |
+        mkdir -p "$RUNNER_TEMP/bin"
+        curl -fsSL -o "$RUNNER_TEMP/bin/rattler-build.exe" \
+          https://github.com/prefix-dev/rattler-build/releases/latest/download/rattler-build-x86_64-pc-windows-msvc.exe
+        echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+        curl -fsSL -o "$RUNNER_TEMP/conda_build_config.yaml" \
+          https://raw.githubusercontent.com/conda-forge/conda-forge-pinning-feedstock/main/recipe/conda_build_config.yaml
+
+    - name: Build package
+      run: |
+        rattler-build --version
+        rattler-build build \
+          --recipe ci/conda/recipe.yaml \
+          --variant-config "$RUNNER_TEMP/conda_build_config.yaml" \
+          --variant-config ci/conda/conda_build_config.yaml \
+          --channel conda-forge \
+          --output-dir "$RUNNER_TEMP/output" \
+          --keep-build \
+          2>&1 | tee "$RUNNER_TEMP/build.log"
+        exit ${PIPESTATUS[0]}
+
+    - name: Upload package and build log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: imas-fortran-win-64
+        path: |
+          ${{ runner.temp }}/build.log
+          ${{ runner.temp }}/output/**/*.conda
+          ${{ runner.temp }}/output/bld/**/work/build/CMakeCache.txt
+          ${{ runner.temp }}/output/bld/**/work/build/CMakeFiles/*.log
+        if-no-files-found: ignore
+
+    # Interactive debugging: connect with the SSH command printed in the log.
+    # Only your own GitHub SSH keys are accepted. The build tree is kept under
+    # $RUNNER_TEMP/output/bld (--keep-build).
+    - name: Open SSH session on failure
+      if: failure() && inputs.debug
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 60
+      with:
+        limit-access-to-actor: true
