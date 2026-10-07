@@ -185,7 +185,9 @@ foreach( ID_FILE IN LISTS DD_IDENTIFIER_FILES )
       -s ${ID_FILE}
       -o ${CMAKE_CURRENT_BINARY_DIR}/${ID_NAME}_identifier_output.xml
       name=${ID_NAME}
-      prefix=${IDENTIFIER_SRC_DIR}
+      # Relative to the output file (in the working directory): an absolute
+      # Windows path (D:/...) would be parsed as a URL with scheme "d:"
+      prefix=identifiers/src/
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/identifiers.xsl
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   )
