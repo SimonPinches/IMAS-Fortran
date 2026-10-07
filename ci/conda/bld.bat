@@ -72,7 +72,7 @@ cmake --build build --target install
 if errorlevel 1 exit 1
 
 :: Our own generated pkg-config files embed the same GNU-ld-only flags
-for %%F in (al-fortran.pc al-fortran-%DD_VERSION%.pc al-identifiers-fortran.pc) do (
+for %%F in (al-fortran.pc al-fortran-%DD_VERSION%.pc al-identifiers-fortran.pc imas-fortran.pc imas-fortran-%DD_VERSION%.pc imas-identifiers-fortran.pc) do (
     python -c "import pathlib, re; p = pathlib.Path(r'%LIBRARY_LIB%\pkgconfig\%%F'); p.write_text(re.sub(r'-Wl,\S+ ?', '', p.read_text()))"
     if errorlevel 1 exit 1
 )

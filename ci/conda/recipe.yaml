@@ -69,9 +69,8 @@ tests:
         - ${{ "Library/" if win }}lib/pkgconfig/al-fortran.pc
         - ${{ "Library/" if win }}lib/pkgconfig/al-fortran-${{ dd_version }}.pc
         - ${{ "Library/" if win }}lib/pkgconfig/al-identifiers-fortran.pc
-        # backwards-compatibility symlinks (not created on Windows)
-        - if: unix
-          then: lib/pkgconfig/imas-fortran.pc
+        # backwards-compatibility symlinks (copies on Windows)
+        - ${{ "Library/" if win }}lib/pkgconfig/imas-fortran.pc
   - script:
       - pkg-config --exists --print-errors al-fortran
       - pkg-config --exists --print-errors "al-fortran-${{ dd_version }}"

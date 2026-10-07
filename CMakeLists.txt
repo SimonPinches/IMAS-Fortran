@@ -249,20 +249,26 @@ install( FILES
     ${CMAKE_CURRENT_BINARY_DIR}/al-identifiers-fortran.pc
   DESTINATION lib/pkgconfig
 )
-# Create backward-compatibility symlinks for imas-* pkgconfig files
+# Create backward-compatibility symlinks for imas-* pkgconfig files (copies
+# on Windows, where symlinks are not generally supported)
+if( WIN32 )
+  set( _PC_LINK_COMMAND copy )
+else()
+  set( _PC_LINK_COMMAND create_symlink )
+endif()
 install( CODE
   "execute_process(
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
+    COMMAND ${CMAKE_COMMAND} -E ${_PC_LINK_COMMAND}
       al-fortran.pc imas-fortran.pc
     WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX}/lib/pkgconfig
   )
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
+    COMMAND ${CMAKE_COMMAND} -E ${_PC_LINK_COMMAND}
       al-fortran-${DD_VERSION}.pc imas-fortran-${DD_VERSION}.pc
     WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX}/lib/pkgconfig
   )
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
+    COMMAND ${CMAKE_COMMAND} -E ${_PC_LINK_COMMAND}
       al-identifiers-fortran.pc imas-identifiers-fortran.pc
     WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX}/lib/pkgconfig
   )
