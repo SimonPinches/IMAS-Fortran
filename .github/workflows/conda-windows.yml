@@ -56,9 +56,9 @@ jobs:
         name: imas-fortran-win-64
         path: |
           ${{ runner.temp }}/build.log
-          ${{ runner.temp }}/output/**/*.conda
-          ${{ runner.temp }}/output/bld/**/work/build/CMakeCache.txt
-          ${{ runner.temp }}/output/bld/**/work/build/CMakeFiles/*.log
+          ${{ runner.temp }}/output/win-64/*.conda
+          ${{ runner.temp }}/output/bld/rattler-build_*/work/build/CMakeCache.txt
+          ${{ runner.temp }}/output/bld/rattler-build_*/work/build/CMakeFiles/*.log
         if-no-files-found: ignore
 
     # Interactive debugging: connect with the SSH command printed in the log.
