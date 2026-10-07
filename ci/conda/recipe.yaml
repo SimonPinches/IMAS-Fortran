@@ -71,6 +71,7 @@ tests:
         - ${{ "Library/" if win }}lib/pkgconfig/al-identifiers-fortran.pc
         # backwards-compatibility symlinks (copies on Windows)
         - ${{ "Library/" if win }}lib/pkgconfig/imas-fortran.pc
+        - ${{ "Library/" if win }}lib/cmake/al-fortran/al-fortranConfig.cmake
   - script:
       - pkg-config --exists --print-errors al-fortran
       - pkg-config --exists --print-errors "al-fortran-${{ dd_version }}"
@@ -100,6 +101,32 @@ tests:
         - ${{ compiler('c') }}
       run:
         - pkg-config
+  # Same program, built with the CMake package: find_package( al-fortran )
+  - script:
+      - if: unix
+        then:
+          - cmake -S . -B build-cmake -G Ninja -D CMAKE_PREFIX_PATH="$PREFIX"
+          - cmake --build build-cmake
+          - ./build-cmake/test_imas_fortran
+      - if: win
+        then:
+          - cmake -S . -B build-cmake -G Ninja -D CMAKE_PREFIX_PATH="%PREFIX%\Library" || exit /b 1
+          - cmake --build build-cmake || exit /b 1
+          - build-cmake\test_imas_fortran.exe || exit /b 1
+    files:
+      recipe:
+        - CMakeLists.txt
+        - test_imas_fortran.f90
+    requirements:
+      build:
+        - ${{ compiler('fortran') }}
+        - ${{ compiler('c') }}
+        - ${{ compiler('cxx') }}
+        - cmake
+        - ninja
+      run:
+        # Required by the al-core CMake package of libimas-core (see CMakeLists.txt)
+        - libboost-devel
 
 about:
   homepage: https://imas.iter.org/
