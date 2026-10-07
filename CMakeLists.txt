@@ -150,6 +150,7 @@ set( SOURCES ${GENERATED_SOURCES} )
 list( APPEND SOURCES 
   wrapper/al_defs.f90
   wrapper/al_low_level_wrap.f90
+  wrapper/al_status_wrap.c
 )
 
 

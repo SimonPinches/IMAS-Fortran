@@ -37,56 +37,50 @@ module al_low_level_wrap
 
 !!!!! direct wrappers to new API !!!!!
      function c_al_context_info(ctx, info) &
-          bind(C,name="al_context_info")
+          bind(C,name="al_fortran_context_info")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_context_info
+       type(C_PTR) :: c_al_context_info
        integer(C_INT), value, intent(in) :: ctx
        type(C_PTR), intent(out) :: info
      end function c_al_context_info
 
      function c_al_get_backendID(ctx, beid) &
-          bind(C,name="al_get_backendID")
+          bind(C,name="al_fortran_get_backendID")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_get_backendID
+       type(C_PTR) :: c_al_get_backendID
        integer(C_INT), value, intent(in) :: ctx
        integer(C_INT), intent(out) :: beid
      end function c_al_get_backendID
 
      function c_al_build_uri_from_legacy_parameters(beid, pulse, run, usr, tok, ver, opt, uri) &
-          bind(C,name="al_build_uri_from_legacy_parameters")
+          bind(C,name="al_fortran_build_uri_from_legacy_parameters")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_build_uri_from_legacy_parameters
+       type(C_PTR) :: c_al_build_uri_from_legacy_parameters
        integer(C_INT), value, intent(in) :: beid, pulse, run
        character(C_CHAR), dimension(*), intent(in) :: usr, tok, ver, opt
        type(C_PTR), intent(out) :: uri
      end function c_al_build_uri_from_legacy_parameters
 
      function c_al_begin_dataentry_action(uri, mode, pctx) &
-          bind(C,name="al_begin_dataentry_action")
+          bind(C,name="al_fortran_begin_dataentry_action")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_begin_dataentry_action
+       type(C_PTR) :: c_al_begin_dataentry_action
        character(C_CHAR), dimension(*), intent(in) :: uri
        integer(C_INT), value, intent(in) :: mode
        integer(C_INT), intent(out) :: pctx
      end function c_al_begin_dataentry_action
 
      function c_al_close_pulse(pctx, mode) &
-          bind(C,name="al_close_pulse")
+          bind(C,name="al_fortran_close_pulse")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_close_pulse
+       type(C_PTR) :: c_al_close_pulse
        integer(C_INT), value, intent(in) :: pctx, mode
      end function c_al_close_pulse
 
      function c_al_begin_global_action(pctx, dataobjectname, datapath, rwmode, opctx) &
-          bind(C,name="al_begin_global_action")
+          bind(C,name="al_fortran_begin_global_action")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_begin_global_action
+       type(C_PTR) :: c_al_begin_global_action
        integer(C_INT), value, intent(in) :: pctx, rwmode
        character(C_CHAR), dimension(*), intent(in) :: dataobjectname
        character(C_CHAR), dimension(*), intent(in) :: datapath
@@ -94,10 +88,9 @@ module al_low_level_wrap
      end function c_al_begin_global_action
 
      function c_al_begin_slice_action(pctx, dataobjectname, rwmode, time, interpmode, opctx) &
-          bind(C,name="al_begin_slice_action")
+          bind(C,name="al_fortran_begin_slice_action")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_begin_slice_action
+       type(C_PTR) :: c_al_begin_slice_action
        integer(C_INT), value, intent(in) :: pctx, rwmode, interpmode
        real(C_DOUBLE), value, intent(in) :: time
        character(C_CHAR), dimension(*), intent(in) :: dataobjectname
@@ -105,10 +98,9 @@ module al_low_level_wrap
      end function c_al_begin_slice_action
 
      function c_al_begin_timerange_action(pctx, dataobjectname, rwmode, tmin, tmax, dtime, dim, interpmode, opctx) &
-        bind(C,name="al_begin_timerange_action")
+        bind(C,name="al_fortran_begin_timerange_action")
         use, intrinsic :: ISO_C_BINDING
-        import c_al_status_t
-        type(c_al_status_t) :: c_al_begin_timerange_action
+        type(C_PTR) :: c_al_begin_timerange_action
         character(C_CHAR), dimension(*), intent(in) :: dataobjectname
         integer(C_INT), value, intent(in) :: pctx, rwmode, interpmode
         real(C_DOUBLE), value, intent(in) :: tmin, tmax
@@ -118,35 +110,31 @@ module al_low_level_wrap
      end function c_al_begin_timerange_action
 
      function c_al_end_action(ctx) &
-          bind(C,name="al_end_action")
+          bind(C,name="al_fortran_end_action")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_end_action
+       type(C_PTR) :: c_al_end_action
        integer(C_INT), value, intent(in) :: ctx
      end function c_al_end_action
 
      function c_al_delete_data(ctx, path) &
-          bind(C,name="al_delete_data")
+          bind(C,name="al_fortran_delete_data")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_delete_data
+       type(C_PTR) :: c_al_delete_data
        integer(C_INT), value, intent(in) :: ctx
        character(C_CHAR), dimension(*), intent(in) :: path
      end function c_al_delete_data
 
      function c_al_iterate_over_arraystruct(aosctx, step) &
-          bind(C,name="al_iterate_over_arraystruct")
+          bind(C,name="al_fortran_iterate_over_arraystruct")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_iterate_over_arraystruct
+       type(C_PTR) :: c_al_iterate_over_arraystruct
        integer(C_INT), value, intent(in) :: aosctx, step
      end function c_al_iterate_over_arraystruct
      
      function c_al_read_data(ctx, fieldname, timebase, data, datatype, dim, size_array) &
-          bind(C,name="al_read_data")
+          bind(C,name="al_fortran_read_data")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_read_data
+       type(C_PTR) :: c_al_read_data
        integer(C_INT), value, intent(in) :: ctx, datatype, dim
        character(C_CHAR), dimension(*), intent(in) :: fieldname, timebase
        type(C_PTR), intent(out) :: data
@@ -154,10 +142,9 @@ module al_low_level_wrap
      end function c_al_read_data
      
      function c_al_write_data(ctx, fieldname, timebasename, data, datatype, dim, size_array) &
-          bind(C,name="al_write_data")
+          bind(C,name="al_fortran_write_data")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_write_data
+       type(C_PTR) :: c_al_write_data
        integer(C_INT), value, intent(in) :: ctx, datatype, dim
        character(C_CHAR), dimension(*), intent(in) :: fieldname, timebasename
        type(C_PTR), value, intent(in) :: data
@@ -165,10 +152,9 @@ module al_low_level_wrap
      end function c_al_write_data
      
      function c_al_begin_arraystruct_action(ctx, path, timebase, aos_size, aosctx) &
-          bind(C,name="al_begin_arraystruct_action")
+          bind(C,name="al_fortran_begin_arraystruct_action")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_begin_arraystruct_action
+       type(C_PTR) :: c_al_begin_arraystruct_action
        integer(C_INT), value, intent(in) :: ctx
        integer(C_INT), intent(inout) :: aos_size
        character(C_CHAR), dimension(*), intent(in) :: path, timebase
@@ -176,84 +162,74 @@ module al_low_level_wrap
      end function c_al_begin_arraystruct_action
      
      function c_al_register_plugin(plugin_name) &
-          bind(C,name="al_register_plugin")
+          bind(C,name="al_fortran_register_plugin")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_register_plugin
+       type(C_PTR) :: c_al_register_plugin
        character(C_CHAR), dimension(*), intent(in) :: plugin_name
      end function c_al_register_plugin
      
      function c_al_unregister_plugin(plugin_name) &
-          bind(C,name="al_unregister_plugin")
+          bind(C,name="al_fortran_unregister_plugin")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_unregister_plugin
+       type(C_PTR) :: c_al_unregister_plugin
        character(C_CHAR), dimension(*), intent(in) :: plugin_name
      end function c_al_unregister_plugin
      
      function c_al_bind_plugin(path, plugin_name) &
-          bind(C,name="al_bind_plugin")
+          bind(C,name="al_fortran_bind_plugin")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_bind_plugin
+       type(C_PTR) :: c_al_bind_plugin
        character(C_CHAR), dimension(*), intent(in) :: path, plugin_name
      end function c_al_bind_plugin
      
      function c_al_unbind_plugin(path, plugin_name) &
-          bind(C,name="al_unbind_plugin")
+          bind(C,name="al_fortran_unbind_plugin")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_unbind_plugin
+       type(C_PTR) :: c_al_unbind_plugin
        character(C_CHAR), dimension(*), intent(in) :: path, plugin_name
      end function c_al_unbind_plugin
      
      function c_al_bind_readback_plugins(ctx) &
-          bind(C,name="al_bind_readback_plugins")
+          bind(C,name="al_fortran_bind_readback_plugins")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_bind_readback_plugins
+       type(C_PTR) :: c_al_bind_readback_plugins
        integer(C_INT), value, intent(in):: ctx
      end function c_al_bind_readback_plugins
 
     function c_al_unbind_readback_plugins(ctx) &
-          bind(C,name="al_unbind_readback_plugins")
+          bind(C,name="al_fortran_unbind_readback_plugins")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_unbind_readback_plugins
+       type(C_PTR) :: c_al_unbind_readback_plugins
        integer(C_INT), value, intent(in):: ctx
      end function c_al_unbind_readback_plugins
      
      function c_al_write_plugins_metadata(ctx) &
-          bind(C,name="al_write_plugins_metadata")
+          bind(C,name="al_fortran_write_plugins_metadata")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_write_plugins_metadata
+       type(C_PTR) :: c_al_write_plugins_metadata
        integer(C_INT), value, intent(in):: ctx
      end function c_al_write_plugins_metadata
 
     function c_al_setvalue_int_scalar_parameter_plugin(parameter_name, parameter_value, plugin_name) &
-          bind(C,name="al_setvalue_int_scalar_parameter_plugin")
+          bind(C,name="al_fortran_setvalue_int_scalar_parameter_plugin")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_setvalue_int_scalar_parameter_plugin
+       type(C_PTR) :: c_al_setvalue_int_scalar_parameter_plugin
        integer(C_INT), value, intent(in) :: parameter_value
        character(C_CHAR), dimension(*), intent(in) :: parameter_name, plugin_name
      end function c_al_setvalue_int_scalar_parameter_plugin
      
      function c_al_setvalue_double_scalar_parameter_plugin(parameter_name, parameter_value, plugin_name) &
-          bind(C,name="al_setvalue_double_scalar_parameter_plugin")
+          bind(C,name="al_fortran_setvalue_double_scalar_parameter_plugin")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_setvalue_double_scalar_parameter_plugin
+       type(C_PTR) :: c_al_setvalue_double_scalar_parameter_plugin
        real(C_DOUBLE), value, intent(in) :: parameter_value
        character(C_CHAR), dimension(*), intent(in) :: parameter_name, plugin_name
      end function c_al_setvalue_double_scalar_parameter_plugin
      
      function c_al_setvalue_parameter_plugin(parameter_name, datatype, dim, size_array, parameter_data, plugin_name) &
-          bind(C,name="al_setvalue_parameter_plugin")
+          bind(C,name="al_fortran_setvalue_parameter_plugin")
        use, intrinsic :: ISO_C_BINDING
-       import c_al_status_t
-       type(c_al_status_t) :: c_al_setvalue_parameter_plugin
+       type(C_PTR) :: c_al_setvalue_parameter_plugin
        character(C_CHAR), dimension(*), intent(in) :: parameter_name, plugin_name
        integer(C_INT), value, intent(in) :: datatype, dim
        type(C_PTR), value, intent(in) :: size_array
@@ -261,10 +237,9 @@ module al_low_level_wrap
      end function c_al_setvalue_parameter_plugin
 
      function c_al_get_occurrences(idx, ids_name, al_occurrences_list, list_size) &
-          bind(C,name="al_get_occurrences")
+          bind(C,name="al_fortran_get_occurrences")
       use, intrinsic :: ISO_C_BINDING
-      import c_al_status_t
-      type(c_al_status_t) :: c_al_get_occurrences
+      type(C_PTR) :: c_al_get_occurrences
       integer(C_INT), value, intent(in) :: idx
       character(C_CHAR), dimension(*), intent(in) :: ids_name
       type(C_PTR), intent(out) :: al_occurrences_list
@@ -279,24 +254,40 @@ module al_low_level_wrap
 
   end interface
 
+  ! Convert a C status (struct, or pointer to struct as returned by the
+  ! al_fortran_* C wrappers) to a Fortran status
+  interface fstatus
+     module procedure fstatus_struct, fstatus_ptr
+  end interface fstatus
+
 contains 
 
-  pure function fstatus(cstatus)
+  pure function fstatus_struct(cstatus)
     use, intrinsic :: ISO_C_BINDING
     implicit none
-    type(al_status) :: fstatus
+    type(al_status) :: fstatus_struct
     type(c_al_status_t), intent(in) :: cstatus
     integer :: i
-    fstatus%code = cstatus%code
-    fstatus%message = ' '
+    fstatus_struct%code = cstatus%code
+    fstatus_struct%message = ' '
     if (cstatus%code .lt. 0) then
        i = 1
        do while (cstatus%message(i).ne.C_NULL_CHAR)
-          fstatus%message(i:i) = cstatus%message(i)
+          fstatus_struct%message(i:i) = cstatus%message(i)
           i = i+1
        end do
     end if
-  end function fstatus
+  end function fstatus_struct
+
+  function fstatus_ptr(cstatus_ptr)
+    use, intrinsic :: ISO_C_BINDING
+    implicit none
+    type(al_status) :: fstatus_ptr
+    type(C_PTR), intent(in) :: cstatus_ptr
+    type(c_al_status_t), pointer :: cstatus
+    call c_f_pointer(cstatus_ptr, cstatus)
+    fstatus_ptr = fstatus_struct(cstatus)
+  end function fstatus_ptr
 
   subroutine unpack_string(longstring, lenstring, cpostring)
     implicit none
