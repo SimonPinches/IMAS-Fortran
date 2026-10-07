@@ -78,6 +78,28 @@ tests:
     requirements:
       run:
         - pkg-config
+  # Compile, link and run a user program against the installed package
+  - script:
+      - if: unix
+        then:
+          - $FC $FFLAGS test_imas_fortran.f90 $(pkg-config --cflags --libs al-fortran al-identifiers-fortran) -o test_imas_fortran
+          - ./test_imas_fortran
+      # On Windows, link the import libraries directly: al-core.pc from
+      # libimas-core contains GNU-ld-only flags (-Wl,--defsym, -Wl,-rpath)
+      # that the MSVC/lld linker rejects, so pkg-config --libs is unusable
+      - if: win
+        then:
+          - '%FC% %FFLAGS% test_imas_fortran.f90 -I%PREFIX%\Library\include\fortran %PREFIX%\Library\lib\al-fortran-${{ dd_version }}.lib %PREFIX%\Library\lib\al-identifiers-fortran.lib -o test_imas_fortran.exe || exit /b 1'
+          - test_imas_fortran.exe || exit /b 1
+    files:
+      recipe:
+        - test_imas_fortran.f90
+    requirements:
+      build:
+        - ${{ compiler('fortran') }}
+        - ${{ compiler('c') }}
+      run:
+        - pkg-config
 
 about:
   homepage: https://imas.iter.org/
