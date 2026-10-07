@@ -96,21 +96,26 @@ if( NOT AL_DOWNLOAD_DEPENDENCIES AND NOT AL_DEVELOPMENT_LAYOUT )
     endif()
   endif()
 
-  # Use idsinfo idspath command from venv to get the path to IDSDef.xml or data_dictionary.xml
-  execute_process(
-    COMMAND ${_IDSINFO_COMMAND} idspath
-    OUTPUT_VARIABLE IDSDEF
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    RESULT_VARIABLE _IDSINFO_EXITCODE
-  )
-  
-  if( _IDSINFO_EXITCODE )
-    message( FATAL_ERROR 
-      "Failed to run 'idsinfo idspath' command. "
-      "Please ensure IMAS-Data-Dictionary module is loaded."
+  # Use idsinfo idspath command from venv to get the path to IDSDef.xml or data_dictionary.xml,
+  # unless the path was provided with -D IDSDEF=<path>
+  if( NOT IDSDEF )
+    execute_process(
+      COMMAND ${_IDSINFO_COMMAND} idspath
+      OUTPUT_VARIABLE IDSDEF
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      RESULT_VARIABLE _IDSINFO_EXITCODE
     )
+
+    if( _IDSINFO_EXITCODE )
+      message( FATAL_ERROR
+        "Failed to run 'idsinfo idspath' command. "
+        "Please ensure IMAS-Data-Dictionary module is loaded."
+      )
+    endif()
   endif()
-  
+  # Normalize Windows paths (backslashes) for use in file( GLOB ) below
+  file( TO_CMAKE_PATH "${IDSDEF}" IDSDEF )
+
   if( NOT EXISTS "${IDSDEF}" )
     message( FATAL_ERROR 
       "idsinfo idspath returned '${IDSDEF}' but file does not exist. "

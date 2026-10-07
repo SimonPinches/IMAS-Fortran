@@ -206,8 +206,10 @@ if( CMAKE_Fortran_COMPILER_ID STREQUAL "NAG" )
 else()
   target_link_libraries( al-fortran al )
 endif()
-# Set target output library name to include the DD version
-set_target_properties( al-fortran PROPERTIES LIBRARY_OUTPUT_NAME "al-fortran-${DD_VERSION}" )
+# Set target output library name to include the DD version. Use OUTPUT_NAME
+# rather than LIBRARY_OUTPUT_NAME so that it also applies to static libraries
+# and to Windows DLLs and import libraries (RUNTIME and ARCHIVE artifacts)
+set_target_properties( al-fortran PROPERTIES OUTPUT_NAME "al-fortran-${DD_VERSION}" )
 
 target_include_directories( al-fortran PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/wrapper>
@@ -217,7 +219,9 @@ target_include_directories( al-fortran PUBLIC
 )
 
 add_library( al-identifiers-fortran ${IDENTIFIER_SOURCES} )
-add_dependencies( al-identifiers-fortran al-fortran )
+# The identifier modules use ids_utilities: link against al-fortran, as
+# Windows DLLs cannot have unresolved symbols
+target_link_libraries( al-identifiers-fortran PRIVATE al-fortran )
 target_include_directories( al-identifiers-fortran PUBLIC
   $<BUILD_INTERFACE:${IDENTIFIER_SRC_DIR}>
   $<BUILD_INTERFACE:${GENERATED_SRC_DIR}>

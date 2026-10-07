@@ -21,6 +21,12 @@ endif()
 
 set( CMAKE_POSITION_INDEPENDENT_CODE ON )
 
+# Windows DLLs only export symbols that are explicitly marked, which the
+# Fortran sources don't do: export all symbols instead
+if( WIN32 )
+  set( CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON )
+endif()
+
 # Set default build type to RelWithDebInfo (optimize build, keep debugging symbols)
 if( NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
@@ -81,6 +87,11 @@ if( "Fortran" IN_LIST languages )
       " -fdefault-real-8 -fdefault-double-8 -fno-second-underscore -ffree-line-length-none"
     )
     # string( APPEND CMAKE_Fortran_FLAGS " -Wall -Wextra" )
+  elseif( CMAKE_Fortran_COMPILER_ID STREQUAL "LLVMFlang" )
+    # flang (LLVM) options
+    string( APPEND CMAKE_Fortran_FLAGS
+      " -fdefault-real-8 -fdefault-double-8"
+    )
   elseif( CMAKE_Fortran_COMPILER_ID STREQUAL "NAG" )
     # nagfort options
     string( APPEND CMAKE_Fortran_FLAGS
