@@ -1,0 +1,31 @@
+# CMake package configuration for the IMAS-Fortran HLI. Usage:
+#
+#   find_package(al-fortran REQUIRED)
+#   target_link_libraries(my_program PRIVATE al-fortran::al-fortran)
+#   # identifier modules (al_<name>_identifier):
+#   target_link_libraries(my_program PRIVATE al-fortran::al-identifiers-fortran)
+#
+# The Data Dictionary version of the IDS interface is in al-fortran_DD_VERSION.
+
+@PACKAGE_INIT@
+
+set( al-fortran_DD_VERSION "@DD_VERSION@" )
+
+# IMAS-Core (al-core::al): IMAS-Core 5.7.1 and later provide a CMake package,
+# older releases only provide al-core.pc
+if( NOT TARGET al-core::al )
+  find_package( al-core CONFIG QUIET )
+endif()
+if( NOT TARGET al-core::al )
+  include( CMakeFindDependencyMacro )
+  find_dependency( PkgConfig )
+  pkg_check_modules( _al_fortran_al_core REQUIRED IMPORTED_TARGET al-core )
+  add_library( al-core::al INTERFACE IMPORTED )
+  set_target_properties( al-core::al PROPERTIES
+    INTERFACE_LINK_LIBRARIES PkgConfig::_al_fortran_al_core
+  )
+endif()
+
+include( "${CMAKE_CURRENT_LIST_DIR}/al-fortranTargets.cmake" )
+
+check_required_components( al-fortran )

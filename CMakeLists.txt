@@ -207,8 +207,10 @@ if( CMAKE_Fortran_COMPILER_ID STREQUAL "NAG" )
   get_target_property( AL_BINARY_DIR al BINARY_DIR )
   target_link_options( al-fortran PRIVATE -lal -L${AL_BINARY_DIR} "-Wl,-Xlinker,-rpath,-Xlinker,${AL_BINARY_DIR}" )
 else()
-  target_link_libraries( al-fortran al )
+  target_link_libraries( al-fortran $<BUILD_INTERFACE:al> )
 endif()
+# Installed targets (CMake package, see below) use IMAS-Core's CMake package
+target_link_libraries( al-fortran $<INSTALL_INTERFACE:al-core::al> )
 # Set target output library name to include the DD version. Use OUTPUT_NAME
 # rather than LIBRARY_OUTPUT_NAME so that it also applies to static libraries
 # and to Windows DLLs and import libraries (RUNTIME and ARCHIVE artifacts)
@@ -222,9 +224,9 @@ target_include_directories( al-fortran PUBLIC
 )
 
 add_library( al-identifiers-fortran ${IDENTIFIER_SOURCES} )
-# The identifier modules use ids_utilities: link against al-fortran, as
-# Windows DLLs cannot have unresolved symbols
-target_link_libraries( al-identifiers-fortran PRIVATE al-fortran )
+# The identifier modules use ids_utilities and expose its types: link against
+# al-fortran (also required as Windows DLLs cannot have unresolved symbols)
+target_link_libraries( al-identifiers-fortran PUBLIC al-fortran )
 target_include_directories( al-identifiers-fortran PUBLIC
   $<BUILD_INTERFACE:${IDENTIFIER_SRC_DIR}>
   $<BUILD_INTERFACE:${GENERATED_SRC_DIR}>
@@ -235,7 +237,7 @@ target_include_directories( al-identifiers-fortran PUBLIC
 # Install
 ################################################################################
 
-install( TARGETS al-fortran al-identifiers-fortran )
+install( TARGETS al-fortran al-identifiers-fortran EXPORT al-fortran-targets )
 # Install module files
 install( DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/ DESTINATION include/fortran )
 
@@ -288,6 +290,31 @@ install( CODE
     WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX}/lib/pkgconfig
   )
 "
+)
+
+
+# Install CMake package: find_package( al-fortran )
+include( CMakePackageConfigHelpers )
+set( _AL_FORTRAN_CMAKE_DIR lib/cmake/al-fortran )
+install( EXPORT al-fortran-targets
+  FILE al-fortranTargets.cmake
+  NAMESPACE al-fortran::
+  DESTINATION ${_AL_FORTRAN_CMAKE_DIR}
+)
+configure_package_config_file(
+  cmake/al-fortranConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/al-fortranConfig.cmake
+  INSTALL_DESTINATION ${_AL_FORTRAN_CMAKE_DIR}
+)
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/al-fortranConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+install( FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/al-fortranConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/al-fortranConfigVersion.cmake
+  DESTINATION ${_AL_FORTRAN_CMAKE_DIR}
 )
 
 
