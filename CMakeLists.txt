@@ -248,6 +248,13 @@ if( APPLE OR WIN32 )
 else()
   set( DD_PC_VERSION_SYMBOL_FLAG " -Wl,--defsym,DD_VER_${DD_SAFE_VERSION}=0" )
 endif()
+# Windows has no runtime search path: DLLs are found through PATH, and MSVC's
+# link.exe rejects -rpath
+if( WIN32 )
+  set( PC_RPATH_FLAG "" )
+else()
+  set( PC_RPATH_FLAG " -Wl,-rpath,\${libdir}" )
+endif()
 configure_file( pkgconfig/al-fortran.pc.in al-fortran.pc @ONLY )
 configure_file( pkgconfig/al-fortran-DD_VERSION.pc.in al-fortran-${DD_VERSION}.pc @ONLY )
 configure_file( pkgconfig/al-identifiers-fortran.pc.in al-identifiers-fortran.pc @ONLY )

@@ -82,13 +82,3 @@ cmake ${CMAKE_ARGS} \
     -D AL_EXAMPLES=OFF
 
 cmake --build build --target install
-
-# Our own generated pkg-config files embed the same GNU-ld-only --defsym
-# flag: strip it on macOS so that consumers of this package can link.
-# (imas-*.pc are symlinks to these files, so only edit the real files.)
-if [[ "${target_platform}" == osx-* ]]; then
-    for pc in al-fortran.pc "al-fortran-${DD_VERSION}.pc" al-identifiers-fortran.pc; do
-        sed -i.bak -E 's/-Wl,--defsym,[A-Za-z0-9_.]+=0 ?//g' "${PREFIX}/lib/pkgconfig/${pc}"
-        rm -f "${PREFIX}/lib/pkgconfig/${pc}.bak"
-    done
-fi

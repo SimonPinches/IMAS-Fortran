@@ -44,6 +44,8 @@ if errorlevel 1 exit 1
 :: linker rejects: strip them from the pkg-config file in the host environment.
 :: This is a build-time change only: files pre-existing in the host prefix
 :: are not packaged, so the installed libimas-core package is unaffected.
+:: Can be removed once libimas-core is built from an IMAS-Core release that
+:: only emits these flags on supported platforms.
 python -c "import pathlib, re; p = pathlib.Path(r'%LIBRARY_LIB%\pkgconfig\al-core.pc'); p.write_text(re.sub(r'-Wl,\S+ ?', '', p.read_text()))"
 if errorlevel 1 exit 1
 set "PKG_CONFIG_PATH=%LIBRARY_LIB%\pkgconfig"
@@ -70,9 +72,3 @@ if errorlevel 1 exit 1
 
 cmake --build build --target install
 if errorlevel 1 exit 1
-
-:: Our own generated pkg-config files embed the same GNU-ld-only flags
-for %%F in (al-fortran.pc al-fortran-%DD_VERSION%.pc al-identifiers-fortran.pc imas-fortran.pc imas-fortran-%DD_VERSION%.pc imas-identifiers-fortran.pc) do (
-    python -c "import pathlib, re; p = pathlib.Path(r'%LIBRARY_LIB%\pkgconfig\%%F'); p.write_text(re.sub(r'-Wl,\S+ ?', '', p.read_text()))"
-    if errorlevel 1 exit 1
-)
